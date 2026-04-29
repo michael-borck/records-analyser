@@ -33,9 +33,10 @@ def main() -> None:
         result = DataLens().analyse(args.file)
 
         if args.as_json:
-            print(json.dumps(result, indent=2, default=str))
             if not result["success"]:
+                print(json.dumps(result, indent=2, default=str), file=sys.stderr)
                 sys.exit(1)
+            print(json.dumps(result, indent=2, default=str))
             return
 
         if not result["success"]:
@@ -63,3 +64,6 @@ def main() -> None:
                         print(f"  {col}: numeric  min={info['min']}  max={info['max']}  mean={info['mean']}  missing={info['missing']}")
                     else:
                         print(f"  {col}: categorical  unique={info['unique']}  missing={info['missing']}")
+            else:
+                for k, v in profile.items():
+                    print(f"  {k}: {v}")

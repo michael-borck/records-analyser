@@ -57,12 +57,11 @@ def load(path: Path) -> LoadResult:
         return LoadResult(format="parquet", df=df)
 
     if ext in {".sqlite", ".db", ".sqlite3"}:
-        conn = sqlite3.connect(path)
         tables = {}
-        cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
-        for (table_name,) in cursor.fetchall():
-            tables[table_name] = pd.read_sql_query(f"SELECT * FROM [{table_name}]", conn)
-        conn.close()
+        with sqlite3.connect(path) as conn:
+            cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            for (table_name,) in cursor.fetchall():
+                tables[table_name] = pd.read_sql_query(f"SELECT * FROM [{table_name}]", conn)
         return LoadResult(format="sqlite", tables=tables)
 
     if ext == ".json":

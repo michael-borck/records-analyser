@@ -44,9 +44,13 @@ def load(path: Path) -> LoadResult:
         df = pd.read_csv(path, sep=sep)
         return LoadResult(format=ext.lstrip("."), df=df)
 
-    if ext in {".xlsx", ".xls"}:
+    if ext == ".xlsx":
         df = pd.read_excel(path, engine="openpyxl")
         return LoadResult(format="xlsx", df=df)
+
+    if ext == ".xls":
+        df = pd.read_excel(path, engine="xlrd")
+        return LoadResult(format="xls", df=df)
 
     if ext == ".parquet":
         df = pd.read_parquet(path)

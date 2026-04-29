@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "data-lens"
+version = "0.1.0"
+description = "Structured data profiling for the prism lens family"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.0.0",
+    "openpyxl>=3.1.0",
+    "PyYAML>=6.0.0",
+    "pyarrow>=14.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[project.scripts]
+data-lens = "data_lens.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/data_lens"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

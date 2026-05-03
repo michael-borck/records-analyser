@@ -1,8 +1,5 @@
 """Integration tests for DataLens."""
 
-import json
-import subprocess
-import sys
 from pathlib import Path
 
 import pytest

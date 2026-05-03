@@ -53,6 +53,13 @@ class TestDataLensSQLite:
         users = DataLens().analyse(sample_sqlite)["tables"]["users"]
         assert users["rows"] == 2
 
+    def test_empty_sqlite_raises(self, tmp_path: Path):
+        import sqlite3
+        db = tmp_path / "empty.db"
+        sqlite3.connect(str(db)).close()
+        with pytest.raises(DataLensError, match="No tables"):
+            DataLens().analyse(db)
+
 
 class TestDataLensEdgeCases:
     def test_unsupported_format_raises(self, tmp_path: Path):

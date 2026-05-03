@@ -44,7 +44,9 @@ class DataLens:
             if loaded.warning:
                 data["warning"] = loaded.warning
 
-            if loaded.tables:
+            if loaded.tables is not None:
+                if not loaded.tables:
+                    raise DataLensError(f"No tables found in SQLite file: {file_path}")
                 data["tables"] = {
                     name: profile_dataframe(df)
                     for name, df in loaded.tables.items()

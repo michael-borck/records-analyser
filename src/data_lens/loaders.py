@@ -1,7 +1,7 @@
 import json
 import sqlite3
 import xml.etree.ElementTree as ET
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -14,7 +14,7 @@ class LoadResult:
     format: str
     df: pd.DataFrame | None = None          # set for tabular formats
     raw: Any = None                          # set for non-tabular formats
-    tables: dict[str, pd.DataFrame] = field(default_factory=dict)  # SQLite multi-table
+    tables: dict[str, pd.DataFrame] | None = None  # SQLite multi-table
     warning: str | None = None
 
 

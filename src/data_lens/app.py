@@ -93,11 +93,10 @@ async def analyse(
 
     try:
         data = _lens.analyse(tmp_path)
+        return DataAnalysis(**data)
     except DataLensError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         tmp_path.unlink(missing_ok=True)
-
-    return DataAnalysis(**data)

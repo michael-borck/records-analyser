@@ -1,5 +1,8 @@
 """Integration tests for DataLens."""
 
+import json
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -75,3 +78,26 @@ class TestDataLensEdgeCases:
     def test_string_path_accepted(self, sample_csv: Path):
         result = DataLens().analyse(str(sample_csv))
         assert "format" in result
+
+
+class TestCLI:
+    def test_analyse_unsupported_exits_1(self, tmp_path: Path):
+        p = tmp_path / "file.xyz"
+        p.write_bytes(b"data")
+        proc = subprocess.run(
+            [sys.executable, "-m", "data_lens.cli", "analyse", str(p), "--json"],
+            capture_output=True, text=True,
+        )
+        assert proc.returncode == 1
+        err = json.loads(proc.stderr)
+        assert "error" in err
+        assert "success" not in err
+
+    def test_serve_help(self):
+        proc = subprocess.run(
+            [sys.executable, "-m", "data_lens.cli", "serve", "--help"],
+            capture_output=True, text=True,
+        )
+        assert proc.returncode == 0
+        assert "--port" in proc.stdout
+        assert "--host" in proc.stdout

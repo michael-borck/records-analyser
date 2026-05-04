@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "data-lens"
 version = "0.1.0"
-description = "Structured data profiling for the prism lens family"
+description = "Structured data profiling for the poly-lens family"
 requires-python = ">=3.11"
 dependencies = [
     "pandas>=2.0.0",
@@ -13,6 +13,10 @@ dependencies = [
     "xlrd>=2.0.0",
     "PyYAML>=6.0.0",
     "pyarrow>=14.0.0",
+    "fastapi>=0.111.0",
+    "uvicorn[standard]>=0.29.0",
+    "python-multipart>=0.0.9",
+    "slowapi>=0.1.9",
 ]
 
 [project.optional-dependencies]
@@ -22,7 +26,7 @@ dev = [
 ]
 
 [project.scripts]
-data-lens = "data_lens.cli:main"
+datalens = "data_lens.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/data_lens"]

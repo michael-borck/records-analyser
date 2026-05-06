@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from data_lens import DataLens
-from data_lens.exceptions import DataLensError
+from records_analyser import DataLens
+from records_analyser.exceptions import DataLensError
 
 
 class TestDataLensCSV:
@@ -85,7 +85,7 @@ class TestCLI:
         p = tmp_path / "file.xyz"
         p.write_bytes(b"data")
         proc = subprocess.run(
-            [sys.executable, "-m", "data_lens.cli", "analyse", str(p), "--json"],
+            [sys.executable, "-m", "records_analyser.cli", "analyse", str(p), "--json"],
             capture_output=True, text=True,
         )
         assert proc.returncode == 1
@@ -95,7 +95,7 @@ class TestCLI:
 
     def test_serve_help(self):
         proc = subprocess.run(
-            [sys.executable, "-m", "data_lens.cli", "serve", "--help"],
+            [sys.executable, "-m", "records_analyser.cli", "serve", "--help"],
             capture_output=True, text=True,
         )
         assert proc.returncode == 0

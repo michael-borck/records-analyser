@@ -3,7 +3,7 @@
 import pandas as pd
 import pytest
 
-from data_lens.profiler import profile_dataframe, profile_raw
+from records_analyser.profiler import profile_dataframe, profile_raw
 
 
 class TestProfileDataframe:

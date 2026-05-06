@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "data-lens"
+name = "records-analyser"
 version = "0.1.0"
 description = "Structured data profiling for the poly-lens family"
 requires-python = ">=3.11"
@@ -27,10 +27,10 @@ dev = [
 ]
 
 [project.scripts]
-datalens = "data_lens.cli:main"
+records-analyser = "records_analyser.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/data_lens"]
+packages = ["src/records_analyser"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

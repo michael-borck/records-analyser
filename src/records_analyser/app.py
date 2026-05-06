@@ -7,7 +7,7 @@ from typing import Any
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from .data_lens import DataLens
+from .records_analyser import DataLens
 from .exceptions import DataLensError
 from .schemas import DataAnalysis, HealthResponse
 

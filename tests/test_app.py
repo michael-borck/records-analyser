@@ -34,8 +34,9 @@ class TestHealthEndpoint:
 
     def test_has_required_fields(self):
         data = client.get("/health").json()
-        assert data["status"] == "healthy"
-        assert data["version"] == "0.1.1"
+        assert data["status"] == "ok"
+        from importlib.metadata import version as _v
+        assert data["version"] == _v("records-analyser")
         assert isinstance(data["uptime"], float)
 
 

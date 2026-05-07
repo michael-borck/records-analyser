@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "records-analyser"
-version = "0.1.1"
+version = "0.1.2"
 description = "Structured data profiling for the analyser family"
 requires-python = ">=3.11"
 dependencies = [

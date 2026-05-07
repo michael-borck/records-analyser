@@ -7,16 +7,16 @@ from typing import Any
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from .records_analyser import DataLens
-from .exceptions import DataLensError
+from .records_analyser import RecordsAnalyser
+from .exceptions import RecordsAnalyserError
 from .schemas import DataAnalysis, HealthResponse
 
-_VERSION = "0.1.0"
+_VERSION = "0.1.1"
 _START_TIME = time.time()
-_lens = DataLens()
+_lens = RecordsAnalyser()
 
 app = FastAPI(
-    title="data-lens",
+    title="records-analyser",
     description="Structured data profiling API",
     version=_VERSION,
     docs_url="/docs",
@@ -64,7 +64,7 @@ if os.getenv("DATA_LENS_RATE_LIMIT_ENABLED", "false").lower() == "true":
 @app.get("/")
 async def root() -> dict[str, Any]:
     return {
-        "service": "data-lens",
+        "service": "records-analyser",
         "version": _VERSION,
         "status": "running",
         "endpoints": {"health": "/health", "analyse": "/analyse"},
@@ -94,7 +94,7 @@ async def analyse(
     try:
         data = _lens.analyse(tmp_path)
         return DataAnalysis(**data)
-    except DataLensError as e:
+    except RecordsAnalyserError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

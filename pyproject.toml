@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "records-analyser"
-version = "0.1.0"
-description = "Structured data profiling for the poly-lens family"
+version = "0.1.1"
+description = "Structured data profiling for the analyser family"
 requires-python = ">=3.11"
 dependencies = [
     "pandas>=2.0.0",

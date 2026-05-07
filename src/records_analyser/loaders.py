@@ -26,7 +26,7 @@ SUPPORTED_EXTENSIONS = TABULAR_EXTENSIONS | NON_TABULAR_EXTENSIONS | DATABASE_EX
 
 _AMBIGUOUS_WARNING = (
     "This {fmt} file may be configuration data rather than a dataset. "
-    "data-lens will profile its structure. For prose content, use document-lens."
+    "records-analyser will profile its structure. For prose content, use document-analyser."
 )
 
 

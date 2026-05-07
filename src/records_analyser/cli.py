@@ -40,12 +40,12 @@ def _main_serve(argv: list[str]) -> None:
 
 
 def _cmd_analyse(args) -> None:
-    from .records_analyser import DataLens
-    from .exceptions import DataLensError
+    from .records_analyser import RecordsAnalyser
+    from .exceptions import RecordsAnalyserError
 
     try:
-        result = DataLens().analyse(args.file)
-    except DataLensError as e:
+        result = RecordsAnalyser().analyse(args.file)
+    except RecordsAnalyserError as e:
         if args.as_json:
             print(json.dumps({"error": str(e)}, indent=2, default=str), file=sys.stderr)
         else:

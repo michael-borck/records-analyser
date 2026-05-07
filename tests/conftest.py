@@ -1,4 +1,4 @@
-"""Shared fixtures for data-lens tests."""
+"""Shared fixtures for records-analyser tests."""
 
 import json
 import sqlite3

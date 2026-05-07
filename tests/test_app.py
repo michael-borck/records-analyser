@@ -1,4 +1,4 @@
-"""Tests for the data-lens FastAPI app."""
+"""Tests for the records-analyser FastAPI app."""
 
 from unittest.mock import patch
 
@@ -35,7 +35,7 @@ class TestHealthEndpoint:
     def test_has_required_fields(self):
         data = client.get("/health").json()
         assert data["status"] == "healthy"
-        assert data["version"] == "0.1.0"
+        assert data["version"] == "0.1.1"
         assert isinstance(data["uptime"], float)
 
 
@@ -45,7 +45,7 @@ class TestRootEndpoint:
 
     def test_has_service_info(self):
         data = client.get("/").json()
-        assert data["service"] == "data-lens"
+        assert data["service"] == "records-analyser"
         assert "health" in data["endpoints"]
         assert "analyse" in data["endpoints"]
 

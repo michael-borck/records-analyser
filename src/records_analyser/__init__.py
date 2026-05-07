@@ -1,4 +1,4 @@
-from .records_analyser import DataLens
-from .exceptions import DataLensError
+from .records_analyser import RecordsAnalyser
+from .exceptions import RecordsAnalyserError
 
-__all__ = ["DataLens", "DataLensError"]
+__all__ = ["RecordsAnalyser", "RecordsAnalyserError"]

@@ -17,9 +17,9 @@ Requires Python 3.11+.
 ### Python
 
 ```python
-from data_lens import DataLens
+from records_analyser import RecordsAnalyser
 
-result = DataLens().analyse("survey.csv")
+result = RecordsAnalyser().analyse("survey.csv")
 
 profile = result["profile"]
 print(f"Rows: {profile['rows']}, Columns: {profile['columns']}")
@@ -107,7 +107,7 @@ Low-level analysis tools. Each accepts files directly and returns structured JSO
 | [document-analyser](https://github.com/michael-borck/document-analyser) | PDF, DOCX, PPTX, TXT — text and readability |
 | [code-analyser](https://github.com/michael-borck/code-analyser) | source code — style, complexity, and quality metrics |
 | [records-analyser](https://github.com/michael-borck/records-analyser) | CSV, Excel, SQLite, Parquet, JSON — data profiling |
-| [multi-analyser](https://github.com/michael-borck/multi-analyser) | any file — detects format and routes to the right tool |
+| [auto-analyser](https://github.com/michael-borck/auto-analyser) | any file — detects format and routes to the right tool |
 
 ## Licence
 

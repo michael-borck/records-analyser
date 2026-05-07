@@ -1,12 +1,12 @@
 from pathlib import Path
 from typing import Any
 
-from .exceptions import DataLensError
+from .exceptions import RecordsAnalyserError
 from .loaders import SUPPORTED_EXTENSIONS, load
 from .profiler import profile_dataframe, profile_raw
 
 
-class DataLens:
+class RecordsAnalyser:
     """Profiles structured data files.
 
     Supports: CSV, TSV, XLSX, XLS, JSON, YAML, XML, SQLite, Parquet.
@@ -16,17 +16,17 @@ class DataLens:
         """Profile a structured data file. Returns the profile dict directly.
 
         Raises:
-            DataLensError: if the file is missing, format is unsupported,
-                           or loading fails.
+            RecordsAnalyserError: if the file is missing, format is unsupported,
+                                  or loading fails.
         """
         if isinstance(file_path, str):
             file_path = Path(file_path)
 
         if not file_path.exists():
-            raise DataLensError(f"File not found: {file_path}")
+            raise RecordsAnalyserError(f"File not found: {file_path}")
 
         if file_path.suffix.lower() not in SUPPORTED_EXTENSIONS:
-            raise DataLensError(
+            raise RecordsAnalyserError(
                 f"Unsupported format: {file_path.suffix}. "
                 f"Supported: {', '.join(sorted(SUPPORTED_EXTENSIONS))}"
             )
@@ -46,7 +46,7 @@ class DataLens:
 
             if loaded.tables is not None:
                 if not loaded.tables:
-                    raise DataLensError(f"No tables found in SQLite file: {file_path}")
+                    raise RecordsAnalyserError(f"No tables found in SQLite file: {file_path}")
                 data["tables"] = {
                     name: profile_dataframe(df)
                     for name, df in loaded.tables.items()
@@ -62,7 +62,7 @@ class DataLens:
 
             return data
 
-        except DataLensError:
+        except RecordsAnalyserError:
             raise
         except Exception as e:
-            raise DataLensError(str(e)) from e
+            raise RecordsAnalyserError(str(e)) from e

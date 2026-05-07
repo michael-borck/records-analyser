@@ -1,2 +1,2 @@
-class DataLensError(Exception):
-    """Raised when data-lens cannot analyse a file."""
+class RecordsAnalyserError(Exception):
+    """Raised when records-analyser cannot analyse a file."""

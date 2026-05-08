@@ -75,9 +75,60 @@ class TestRecordsAnalyserEdgeCases:
         with pytest.raises(RecordsAnalyserError, match="not found"):
             RecordsAnalyser().analyse(tmp_path / "missing.csv")
 
-    def test_string_path_accepted(self, sample_csv: Path):
-        result = RecordsAnalyser().analyse(str(sample_csv))
-        assert "format" in result
+    def test_string_path_equivalent_to_path(self, sample_csv: Path):
+        """A str input must produce equivalent output to a Path input
+        (modulo file_path, which echoes the literal input path)."""
+        lens = RecordsAnalyser()
+        via_path = lens.analyse(sample_csv)
+        via_str = lens.analyse(str(sample_csv))
+        via_path_no_fp = {k: v for k, v in via_path.items() if k != "file_path"}
+        via_str_no_fp = {k: v for k, v in via_str.items() if k != "file_path"}
+        assert via_path_no_fp == via_str_no_fp
+
+
+class TestFormatCoverage:
+    """Direct loader coverage for advertised extensions beyond CSV/JSON/SQLite.
+
+    The audit found 5 of 9 supported extensions had no direct test coverage.
+    These tests close that gap and consume previously-unused fixtures.
+    """
+
+    def test_xlsx_returns_tabular_profile(self, sample_xlsx: Path):
+        result = RecordsAnalyser().analyse(sample_xlsx)
+        assert result["format"] == "xlsx"
+        assert result["profile"]["rows"] == 2
+        assert result["profile"]["columns"] == 2
+        assert "column_profiles" in result["profile"]
+
+    def test_yaml_returns_appropriate_profile(self, sample_yaml: Path):
+        """The fixture is a list of dicts, so loaders.py should hand back a
+        tabular profile (rows/columns) per the list-of-dicts branch at
+        loaders.py:77–79."""
+        result = RecordsAnalyser().analyse(sample_yaml)
+        assert result["format"] == "yaml"
+        assert "profile" in result
+        # List-of-dicts YAML → tabular profile, no warning.
+        assert result["profile"]["rows"] == 2
+        assert "warning" not in result or result.get("warning") is None
+
+    def test_tsv_returns_tabular_profile(self, tmp_path: Path):
+        p = tmp_path / "data.tsv"
+        p.write_text("name\tage\nAlice\t30\nBob\t25\n")
+        result = RecordsAnalyser().analyse(p)
+        assert result["format"] == "tsv"
+        assert result["profile"]["rows"] == 2
+        assert result["profile"]["columns"] == 2
+
+    def test_parquet_returns_tabular_profile(self, tmp_path: Path):
+        pytest.importorskip("pyarrow")
+        import pandas as pd
+        p = tmp_path / "data.parquet"
+        df = pd.DataFrame({"id": [1, 2, 3], "label": ["a", "b", "c"]})
+        df.to_parquet(p)
+        result = RecordsAnalyser().analyse(p)
+        assert result["format"] == "parquet"
+        assert result["profile"]["rows"] == 3
+        assert result["profile"]["columns"] == 2
 
 
 class TestCLI:

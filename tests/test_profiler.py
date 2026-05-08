@@ -38,9 +38,17 @@ class TestProfileDataframe:
         assert col["missing_pct"] == pytest.approx(33.3, abs=0.1)
 
     def test_sample_rows_returned(self):
-        df = pd.DataFrame({"x": range(100)})
+        df = pd.DataFrame({"id": range(100)})
         result = profile_dataframe(df)
-        assert len(result["sample"]) <= 5
+        sample = result["sample"]
+        assert 0 < len(sample) <= 5
+        # Each sample row should contain real values from the input frame.
+        # Sample values are stringified by the profiler (see profiler.py:43),
+        # so compare against str-cast ids.
+        valid_ids = {str(i) for i in range(100)}
+        for row in sample:
+            assert "id" in row
+            assert row["id"] in valid_ids
 
     def test_empty_dataframe(self):
         df = pd.DataFrame()

@@ -63,7 +63,12 @@ class TestAnalyseEndpoint:
         assert response.status_code == 400
         assert "Unsupported" in response.json()["detail"]
 
-    def test_valid_csv_returns_analysis_shape(self, sample_csv):
+    def test_route_returns_lens_output_unchanged(self, sample_csv):
+        """Verifies the route returns the analyser's dict directly (no envelope),
+        with shape validation by Pydantic. This is a plumbing test — the mock
+        provides the response so any field assertion here is tautological;
+        the real correctness check is in test_csv_end_to_end below.
+        """
         with patch("records_analyser.app._lens") as mock_lens:
             mock_lens.analyse.return_value = _FAKE_CSV_ANALYSIS.copy()
             response = client.post(
@@ -72,17 +77,22 @@ class TestAnalyseEndpoint:
             )
         assert response.status_code == 200
         data = response.json()
-        assert data["format"] == "csv"
         assert "profile" in data
         assert "success" not in data
         assert "error" not in data
 
-    def test_response_has_no_envelope(self, sample_csv):
-        with patch("records_analyser.app._lens") as mock_lens:
-            mock_lens.analyse.return_value = _FAKE_CSV_ANALYSIS.copy()
-            data = client.post(
-                "/analyse",
-                files={"file": ("data.csv", sample_csv.read_bytes(), "text/csv")},
-            ).json()
+    def test_csv_end_to_end(self, sample_csv):
+        """No mocks: real _lens runs against sample_csv. Asserts on actual
+        computed values to provide a real signal — `format == "csv"` is now
+        meaningful because the route's analyser produced it.
+        """
+        response = client.post(
+            "/analyse",
+            files={"file": ("data.csv", sample_csv.read_bytes(), "text/csv")},
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["format"] == "csv"
+        assert isinstance(data["profile"]["rows"], int)
+        assert data["profile"]["rows"] == 3
         assert "success" not in data
-        assert "data" not in data

@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .records_analyser import RecordsAnalyser
 from .exceptions import RecordsAnalyserError
 from .schemas import DataAnalysis, HealthResponse
+from .manifest import MANIFEST
 
 # Sourced from pyproject.toml at install time so the FastAPI service version
 # always matches the installed package — no manual sync required.
@@ -81,6 +82,11 @@ async def health() -> HealthResponse:
         version=_VERSION,
         uptime=round(time.time() - _START_TIME, 1),
     )
+
+
+@app.get("/manifest")
+async def manifest() -> dict:
+    return MANIFEST
 
 
 @app.post("/analyse", response_model=DataAnalysis)

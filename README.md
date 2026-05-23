@@ -2,7 +2,7 @@
 
 Profiles structured data files and returns row counts, column statistics, schema inference, missing value counts, and sample rows.
 
-Part of the [analyser family](#the-analyser-family).
+Part of the [analyser family](https://github.com/michael-borck/lens-analysers).
 
 ## Install
 

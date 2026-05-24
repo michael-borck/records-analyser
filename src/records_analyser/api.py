@@ -1,31 +1,29 @@
 import os
-import tempfile
-import time
-from importlib.metadata import version
-from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from lens_contract import add_contract_routes, upload_tempfile
 
 from .records_analyser import RecordsAnalyser
 from .exceptions import RecordsAnalyserError
-from .schemas import DataAnalysis, HealthResponse
+from .schemas import DataAnalysis
 from .manifest import MANIFEST
 
-# Sourced from pyproject.toml at install time so the FastAPI service version
-# always matches the installed package — no manual sync required.
-_VERSION = version("records-analyser")
-_START_TIME = time.time()
 _lens = RecordsAnalyser()
 
+# MANIFEST["version"] is the installed package version (resolved by lens-contract),
+# so the FastAPI service version always matches the package — no manual sync.
 app = FastAPI(
     title="records-analyser",
     description="Structured data profiling API",
-    version=_VERSION,
+    version=MANIFEST["version"],
     docs_url="/docs",
     redoc_url="/redoc",
 )
+
+# GET /health and GET /manifest (the family contract, via lens-contract).
+add_contract_routes(app, MANIFEST)
 
 # CORS — desktop mode allows any localhost origin (for Electron)
 if os.getenv("RECORDS_ANALYSER_MODE") == "desktop":
@@ -69,43 +67,22 @@ if os.getenv("RECORDS_ANALYSER_RATE_LIMIT_ENABLED", "false").lower() == "true":
 async def root() -> dict[str, Any]:
     return {
         "service": "records-analyser",
-        "version": _VERSION,
+        "version": MANIFEST["version"],
         "status": "running",
         "endpoints": {"health": "/health", "analyse": "/analyse"},
     }
-
-
-@app.get("/health", response_model=HealthResponse)
-async def health() -> HealthResponse:
-    return HealthResponse(
-        status="ok",
-        version=_VERSION,
-        uptime=round(time.time() - _START_TIME, 1),
-    )
-
-
-@app.get("/manifest")
-async def manifest() -> dict:
-    return MANIFEST
 
 
 @app.post("/analyse", response_model=DataAnalysis)
 async def analyse(
     file: UploadFile = File(..., description="Data file to analyse"),
 ) -> DataAnalysis:
-    suffix = Path(file.filename or "upload").suffix or ".csv"
     content = await file.read()
-
-    with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
-        tmp.write(content)
-        tmp_path = Path(tmp.name)
-
-    try:
-        data = _lens.analyse(tmp_path)
-        return DataAnalysis(**data)
-    except RecordsAnalyserError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        tmp_path.unlink(missing_ok=True)
+    with upload_tempfile(content, file.filename) as tmp_path:
+        try:
+            data = _lens.analyse(tmp_path)
+            return DataAnalysis(**data)
+        except RecordsAnalyserError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))

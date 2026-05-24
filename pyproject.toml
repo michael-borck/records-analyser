@@ -4,11 +4,12 @@ build-backend = "hatchling.build"
 
 [project]
 name = "records-analyser"
-version = "0.2.1"
+version = "0.3.0"
 description = "Structured data profiling for the analyser family"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "lens-contract>=0.1.0",
     "pandas>=2.0.0",
     "openpyxl>=3.1.0",
     "xlrd>=2.0.0",
@@ -26,6 +27,11 @@ dev = [
     "pytest-cov>=4.0.0",
     "httpx>=0.27.0",
 ]
+
+# Local dev: resolve lens-contract from the sibling checkout. uv strips this from
+# the published wheel, which keeps the plain `lens-contract>=0.1.0` PyPI pin.
+[tool.uv.sources]
+lens-contract = { path = "../lens-contract", editable = true }
 
 [project.scripts]
 records-analyser = "records_analyser.cli:main"

@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 from fastapi.testclient import TestClient
 
-from records_analyser.app import app
+from records_analyser.api import app
 
 client = TestClient(app)
 
@@ -69,7 +69,7 @@ class TestAnalyseEndpoint:
         provides the response so any field assertion here is tautological;
         the real correctness check is in test_csv_end_to_end below.
         """
-        with patch("records_analyser.app._lens") as mock_lens:
+        with patch("records_analyser.api._lens") as mock_lens:
             mock_lens.analyse.return_value = _FAKE_CSV_ANALYSIS.copy()
             response = client.post(
                 "/analyse",

@@ -11,7 +11,7 @@ def test_package_imports_cleanly() -> None:
     file for weeks and no test caught it.
     """
     import records_analyser  # noqa: F401
-    from records_analyser.app import app  # noqa: F401
+    from records_analyser.api import app  # noqa: F401
     from records_analyser.cli import main  # noqa: F401
     from records_analyser import RecordsAnalyser, RecordsAnalyserError  # noqa: F401
 
@@ -19,7 +19,7 @@ def test_package_imports_cleanly() -> None:
 def test_health_version_matches_installed_package() -> None:
     """/health must report the actual installed package version."""
     from fastapi.testclient import TestClient
-    from records_analyser.app import app
+    from records_analyser.api import app
 
     client = TestClient(app)
     response = client.get("/health")
@@ -30,7 +30,7 @@ def test_health_version_matches_installed_package() -> None:
 def test_root_version_matches_installed_package() -> None:
     """/root must also report the installed package version."""
     from fastapi.testclient import TestClient
-    from records_analyser.app import app
+    from records_analyser.api import app
 
     client = TestClient(app)
     response = client.get("/")

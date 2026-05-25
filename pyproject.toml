@@ -4,12 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "records-analyser"
-version = "0.3.0"
+version = "0.4.0"
 description = "Structured data profiling for the analyser family"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "lens-contract>=0.1.0",
+    # [ratelimit] brings slowapi for add_rate_limit; >=0.2.0 has add_cors/add_rate_limit.
+    "lens-contract[ratelimit]>=0.2.0",
     "pandas>=2.0.0",
     "openpyxl>=3.1.0",
     "xlrd>=2.0.0",
@@ -18,7 +19,6 @@ dependencies = [
     "fastapi>=0.111.0",
     "uvicorn[standard]>=0.29.0",
     "python-multipart>=0.0.9",
-    "slowapi>=0.1.9",
 ]
 
 [project.optional-dependencies]

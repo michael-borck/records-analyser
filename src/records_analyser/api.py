@@ -1,9 +1,7 @@
-import os
 from typing import Any
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
-from fastapi.middleware.cors import CORSMiddleware
-from lens_contract import add_contract_routes, upload_tempfile
+from lens_contract import add_contract_routes, add_cors, add_rate_limit, upload_tempfile
 
 from .records_analyser import RecordsAnalyser
 from .exceptions import RecordsAnalyserError
@@ -24,43 +22,10 @@ app = FastAPI(
 
 # GET /health and GET /manifest (the family contract, via lens-contract).
 add_contract_routes(app, MANIFEST)
-
-# CORS — desktop mode allows any localhost origin (for Electron)
-if os.getenv("RECORDS_ANALYSER_MODE") == "desktop":
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origin_regex=(
-            r"^(https?://localhost(:\d+)?"
-            r"|https?://127\.0\.0\.1(:\d+)?"
-            r"|file://.*"
-            r"|null)$"
-        ),
-        allow_credentials=False,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-else:
-    _origins = os.getenv(
-        "RECORDS_ANALYSER_ALLOWED_ORIGINS",
-        "http://localhost:3000,http://localhost:5173",
-    ).split(",")
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=[o.strip() for o in _origins],
-        allow_credentials=True,
-        allow_methods=["GET", "POST", "OPTIONS"],
-        allow_headers=["*"],
-    )
-
-# Optional rate limiting — off by default, enable with RECORDS_ANALYSER_RATE_LIMIT_ENABLED=true
-if os.getenv("RECORDS_ANALYSER_RATE_LIMIT_ENABLED", "false").lower() == "true":
-    from slowapi import Limiter, _rate_limit_exceeded_handler
-    from slowapi.errors import RateLimitExceeded
-    from slowapi.util import get_remote_address
-
-    _limiter = Limiter(key_func=get_remote_address)
-    app.state.limiter = _limiter
-    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore[arg-type]
+# CORS — env-driven: RECORDS_ANALYSER_MODE=desktop (Electron) or RECORDS_ANALYSER_ALLOWED_ORIGINS.
+add_cors(app, env_prefix="RECORDS_ANALYSER")
+# Opt-in rate limiting — RECORDS_ANALYSER_RATE_LIMIT_ENABLED=true (needs the [ratelimit] extra).
+add_rate_limit(app, env_prefix="RECORDS_ANALYSER")
 
 
 @app.get("/")

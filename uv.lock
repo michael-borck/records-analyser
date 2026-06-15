@@ -304,6 +304,35 @@ wheels = [
 ]
 
 [[package]]
+name = "lens-contract"
+version = "0.3.1"
+source = { editable = "../lens-contract" }
+dependencies = [
+    { name = "fastapi" },
+    { name = "python-multipart" },
+    { name = "typing-extensions" },
+    { name = "uvicorn", extra = ["standard"] },
+]
+
+[package.optional-dependencies]
+ratelimit = [
+    { name = "slowapi" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "fastapi", specifier = ">=0.109.0" },
+    { name = "httpx", marker = "extra == 'dev'", specifier = ">=0.27.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
+    { name = "python-multipart", specifier = ">=0.0.9" },
+    { name = "slowapi", marker = "extra == 'dev'", specifier = ">=0.1.9" },
+    { name = "slowapi", marker = "extra == 'ratelimit'", specifier = ">=0.1.9" },
+    { name = "typing-extensions", specifier = ">=4.0" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.27.0" },
+]
+provides-extras = ["ratelimit", "dev"]
+
+[[package]]
 name = "limits"
 version = "5.8.0"
 source = { registry = "https://pypi.org/simple" }
@@ -779,16 +808,16 @@ wheels = [
 
 [[package]]
 name = "records-analyser"
-version = "0.1.3"
+version = "0.5.0"
 source = { editable = "." }
 dependencies = [
     { name = "fastapi" },
+    { name = "lens-contract", extra = ["ratelimit"] },
     { name = "openpyxl" },
     { name = "pandas" },
     { name = "pyarrow" },
     { name = "python-multipart" },
     { name = "pyyaml" },
-    { name = "slowapi" },
     { name = "uvicorn", extra = ["standard"] },
     { name = "xlrd" },
 ]
@@ -804,6 +833,7 @@ dev = [
 requires-dist = [
     { name = "fastapi", specifier = ">=0.111.0" },
     { name = "httpx", marker = "extra == 'dev'", specifier = ">=0.27.0" },
+    { name = "lens-contract", extras = ["ratelimit"], editable = "../lens-contract" },
     { name = "openpyxl", specifier = ">=3.1.0" },
     { name = "pandas", specifier = ">=2.0.0" },
     { name = "pyarrow", specifier = ">=14.0.0" },
@@ -811,7 +841,6 @@ requires-dist = [
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0.0" },
     { name = "python-multipart", specifier = ">=0.0.9" },
     { name = "pyyaml", specifier = ">=6.0.0" },
-    { name = "slowapi", specifier = ">=0.1.9" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.29.0" },
     { name = "xlrd", specifier = ">=2.0.0" },
 ]
